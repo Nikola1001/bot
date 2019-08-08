@@ -26,7 +26,6 @@ def trans(message):
     webRequest.text
     rus_text= webRequest.text
     rus_text = rus_text[36:(len(rus_text)-3)]
-    print(rus_text)
     bot.send_message(message.from_user.id, rus_text)
 
 def weath(message):
@@ -34,19 +33,15 @@ def weath(message):
     res = requests.get('http://api.openweathermap.org/data/2.5/find?q='+
                        city+'&type=like&APPID=d3f517bbd28897fbe8f51d1021673eca')
     data = res.json()
-    print(data)
     try:
         if data['list'][0]['rain']:
             print('da')
             bot.send_message(message.from_user.id, 'конечно, на улице дождь, закончится через: '
                              + str(data['list'][0]['rain']['1h']) + ' час(ов)')
         else:
-            print('net')
             bot.send_message(message.from_user.id, 'нет, сейчас без осадков')
-        print("dozhdick:", data['list'][0]['rain'])
     except:
         bot.send_message(message.from_user.id, "Ты ошибся в запросе. Попробуй ещё раз")
-
 
 def kurs(message):
     from xml.etree import ElementTree as ET
@@ -61,8 +56,7 @@ def kurs(message):
             rub_evro = line.find('Value').text
     bot.send_message(message.from_user.id, 'доллар(USD): '+str(rub_dollar)+' руб')
     bot.send_message(message.from_user.id, 'евро(EUR): ' + str(rub_evro)+' руб')
-    print(rub_dollar, rub_evro)
-
+    
 def birth(message):
     try:
         god=int(message.text)-2010
@@ -80,14 +74,12 @@ def users_list(message):
         cur = users.cursor()
         cur.execute("SELECT * FROM Users")
         rows = cur.fetchall()
-        print(rows)
         for row in rows:
             bot.send_message(message.from_user.id, str(row))
 
 def hello(message):
     users = sqlite3.connect("users.db")
     name = message.from_user.first_name
-    # bot.send_message(message.from_user.id, "Привет, " + str(name)+", чем я могу тебе помочь?")
     with users:
         cur = users.cursor()
         cur.execute("""INSERT INTO Users VALUES(?,?,?);""",(str(message.from_user.id),str(name),str(message.text)))
@@ -99,7 +91,6 @@ def get_text_messages(message):
         users = sqlite3.connect("users.db")
         with users:
             cur = users.cursor()
-            print(str(message.from_user.id))
             cur.execute("SELECT * FROM Users WHERE Id="+str(message.from_user.id))
             rows = cur.fetchall()
         cur.close()
@@ -109,8 +100,6 @@ def get_text_messages(message):
             bot.register_next_step_handler(message, hello)
         else:
             bot.send_message(message.from_user.id, "Привет, " + str(rows[0][2]) + ", чем я могу тебе помочь?")
-        # bot.callback_query_handler(hello(message))
-        # bot.send_message(message.from_user.id, "Привет, чем я могу тебе помочь?")
     elif (message.text == "/help" or message.text == "помощь" or message.text == "Помощь"):
         bot.send_message(message.from_user.id, 'Вот что я могу: \n Напиши мне: курс - я скажу текущий курс валют' \
       '\n брать ли зонт - скажу о текущей погоде \n' \
