@@ -1,1 +1,1 @@
-web: puthon bot.py
+web: python bot.py
